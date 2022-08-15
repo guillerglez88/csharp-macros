@@ -26,12 +26,14 @@ var getValue = Expression
 ```
 
 ```csharp
-var getValue = 
-    seq("fn", 
-        seq("obj", typeof(object)),
-        seq("cast", typeof(object), 
-            seq("get", "Name", 
-                seq("cast", typeof(Person),
-                    seq("param", "obj" )))))
+var getName =
+	E("fn",
+		E("obj", typeof(object)),
+		E("cast", typeof(object),
+			E("get", "Name",
+				E("cast", person.GetType(),
+					E("param", "obj"))))).Compile();
+
+getName(person); // => "Rodriguez"
 ```
 
