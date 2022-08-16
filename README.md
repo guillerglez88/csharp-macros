@@ -10,7 +10,9 @@ All the expression tree is built as a uniform data structure. Components of an e
 E: (object: T[]) -> Exp
 ```
 
-## Exp.Expand()
+The expression building process is:
+
+Exp -> [expand -> translate -> compile] -> Func<...>
 
 ## Functions
 
@@ -34,8 +36,6 @@ To build this function:
 Func<Person, HumanName> getName = (Person person) => person.Name;
 ```
 
-We build an expression like this:
-
 ```csharp
 var getName = E("fn",
     E("person", person.GetType()),
@@ -45,7 +45,7 @@ var getName = E("fn",
 getName(person); // => { "Given": [ "Glen", "Ruben" ], "Family": "Rodriguez"}
 ```
 
-Which is a data structure like this:
+### Exp data structure
 
 ```json
 ["fn",
@@ -54,7 +54,7 @@ Which is a data structure like this:
         ["param", "person"]]]
 ```
 
-Which is expanded to this:
+### Expanded
 
 ```json
 ["fn", 
