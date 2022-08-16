@@ -10,6 +10,8 @@ All the expression tree is built as a uniform data structure. Components of an e
 E: (object: T[]) -> Exp
 ```
 
+## Exp.Expand()
+
 ## Functions
 
 Composed of exp-type: "fn", first expression for arguments with even number of components for pairs: ("arg-name", arg-type) and a body expression of any type.
@@ -26,9 +28,13 @@ body: E("exp-type", exp-params...)
 
 ## Examples
 
+To build this function:
+
 ```csharp
 Func<Person, HumanName> getName = (Person person) => person.Name;
 ```
+
+We build an expression like this:
 
 ```csharp
 var getName = E("fn",
@@ -39,11 +45,22 @@ var getName = E("fn",
 getName(person); // => { "Given": [ "Glen", "Ruben" ], "Family": "Rodriguez"}
 ```
 
+Which is a data structure like this:
+
 ```json
 ["fn",
     ["person", person.GetType()],
     ["get", "Name",
         ["param", "person"]]]
+```
+
+Which is expanded to this:
+
+```json
+["fn", 
+    ["param", "person", person.GetType()],
+    ["get", "Name",
+        ["param", "person", person.GetType()]]]
 ```
 
 ## Supported expressions

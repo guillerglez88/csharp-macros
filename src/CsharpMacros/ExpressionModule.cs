@@ -40,12 +40,15 @@ public static class ExpressionModule
 
     public static Func<object, object> Compile(this Exp fn)
     {
-        var expanded = expand(fn, default);
+        var expanded = fn.Expand();
         var exp = translate(expanded);
         var lambda = ((LambdaExpression)exp).Compile();
 
         return (arg) => lambda.DynamicInvoke(arg);
     }
+
+    public static Exp Expand(this Exp exp)
+        => expand(exp, default);
 
     private static Exp ExpandFn(Exp fn)
     {
