@@ -28,13 +28,14 @@ public class ExpressionTests
     [Fact]
     public void CanBuildExp()
     {
-        var getNameExp = E("fn",
-            E("person", person.GetType()),
-            E("get", "Name",
-                E("param", "person")));
-        var getName = getNameExp.Compile();
+        var getName = 
+            E("fn",
+                E("person", person.GetType()),
+                E("get", "Name",
+                    E("param", "person")))
+            .Compile();
 
-        dynamic name = getName(person);
+        dynamic name = getName(new[] { person });
 
         Assert.Equal("Rodriguez", name.Family);
     }

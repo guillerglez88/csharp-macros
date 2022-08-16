@@ -57,7 +57,7 @@ getName(person); // => { "Given": [ "Glen", "Ruben" ], "Family": "Rodriguez"}
 ### Expanded
 
 ```json
-["fn", 
+["fn",
     ["param", "person", person.GetType()],
     ["get", "Name",
         ["param", "person", person.GetType()]]]
@@ -65,9 +65,11 @@ getName(person); // => { "Given": [ "Glen", "Ruben" ], "Family": "Rodriguez"}
 
 ## Supported expressions
 
-| exp-type | desc          | expandable | example |
-| -------- | ------------- | :--------: | ------- |
-| "fn"     | lambda exp    |     X      |         |
-| "get"    | member access |            |         |
-| "cast"   | convert       |            |         |
-| "param"  | fn arg ref    |     X      |         |
+| exp-type | desc             | expandable | example                  |
+| -------- | ---------------- | :--------: | ------------------------ |
+| "fn"     | lambda exp       |     X      | ("fn", Exp, Exp)         |
+| "get"    | member access    |            | ("get", "PropName", Exp) |
+| "cast"   | convert          |            | ("cast", Type, Exp)      |
+| "param"  | fn arg ref       |     X      | ("param", "param-name")  |
+| "const"  | declare constant |            | ("const", 5)             |
+| "sum"    | add numbers      |     X      | ("sum", 1, 2, 3, 4, 5)   |

@@ -21,14 +21,17 @@ public static class ExpressionModule
                 dispatch: (exp) => exp.First())
             .DefMethod("fn", TranslateFn)
             .DefMethod("param", memoTranslateParam)
+            .DefMethod("const", TranslateConst)
             .DefMethod("cast", TranslateCast)
-            .DefMethod("get", TranslateGet);
+            .DefMethod("get", TranslateGet)
+            .DefMethod("sum", TranslateSum);
 
         var expandMulti = DefMulti(
                 contract: ((Exp exp, IEnumerable<Exp> args) arg) => default(Exp),
                 dispatch: (arg) => arg.exp.Cast<string>().First())
             .DefMethod("fn", (arg) => ExpandFn(arg.exp))
             .DefMethod("param", (arg) => ExpandParamRef(arg.exp, arg.args))
+            .DefMethod("sum", (arg) => ExpandSum(arg.exp))
             .DefDefault((_, arg) => ExpandExp(arg.exp, arg.args));
 
         translate = translateMulti.Invoke;
@@ -38,17 +41,30 @@ public static class ExpressionModule
     public static Exp E(params object[] exp)
         => new Exp(exp);
 
-    public static Func<object, object> Compile(this Exp fn)
-    {
-        var expanded = fn.Expand();
-        var exp = translate(expanded);
-        var lambda = ((LambdaExpression)exp).Compile();
+    public static Func<T> Compile<T>(this Exp exp,
+        Func<T> contract)
+        => () => (T)exp.Compile().Invoke(arg: null);
 
-        return (arg) => lambda.DynamicInvoke(arg);
+    public static Func<T, W> Compile<T, W>(this Exp exp,
+        Func<T, W> contract)
+        => (t) => (W)exp.Compile().Invoke(new object[] { t });
+
+    public static Func<object[], object> Compile(
+        this Exp exp)
+    {
+        var expanded = exp.Expand();
+        var expression = translate(expanded);
+        var lambda = expression is LambdaExpression lambdaExp ? lambdaExp : Expression.Lambda(expression);
+        var invocable = lambda.Compile();
+
+        return (args) => invocable.DynamicInvoke(args);
     }
 
     public static Exp Expand(this Exp exp, IEnumerable<Exp> args = default)
         => expand(exp, args);
+
+    public static Expression Translate(this Exp exp)
+        => translate(exp);
 
     private static Exp ExpandFn(Exp fn)
     {
@@ -69,6 +85,16 @@ public static class ExpressionModule
         var param = args.First(arg => arg.Nth<string>(1) == name);
 
         return param;
+    }
+
+    private static Exp ExpandSum(Exp sum)
+    {
+        var expanded = sum
+            .Skip(1)
+            .Select(arg => arg is Exp expArg ? expArg : E("const", arg))
+            .Aggregate(E("const", 0), (acc, curr) => E("sum", acc, curr));
+
+        return expanded;
     }
 
     private static Exp ExpandExp(Exp exp, IEnumerable<Exp> args)
@@ -122,5 +148,20 @@ public static class ExpressionModule
         var transInner = translate(inner);
 
         return Expression.Convert(transInner, type);
+    }
+
+    private static Expression TranslateConst(Exp constant)
+    {
+        var val = constant.Nth<object>(1);
+
+        return Expression.Constant(val);
+    }
+
+    private static Expression TranslateSum(Exp sum)
+    {
+        var left = translate(sum.Nth<Exp>(1));
+        var right = translate(sum.Nth<Exp>(2));
+
+        return Expression.Add(left, right);
     }
 }
