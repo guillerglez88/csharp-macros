@@ -10,27 +10,29 @@ namespace CsharpMacros.UnitTests;
 
 public class ExpressionTests
 {
-    private readonly object person = new {
-        Name = new {
+    private readonly object person = new
+    {
+        Name = new
+        {
             Given = new[] { "Glen", "Ruben" },
-            Family = "Rodriguez" },
+            Family = "Rodriguez"
+        },
         DoB = new DateTime(2011, 10, 3),
-        Addresses = new[] { 
-            new { 
+        Addresses = new[] {
+            new {
                 Lines = new[] { "184 #42301, esq 423" },
                 PostalCode = "18100",
-                Period = new { Start = new DateTime(2019, 04, 17) } } } };
+                Period = new { Start = new DateTime(2019, 04, 17) } } }
+    };
 
     [Fact]
     public void CanBuildExp()
     {
-        var getName =
-            E("fn",
-                E("obj", typeof(object)),
-                E("cast", typeof(object),
-                    E("get", "Name",
-                        E("cast", person.GetType(),
-                            E("param", "obj"))))).Compile();
+        var getNameExp = E("fn",
+            E("person", person.GetType()),
+            E("get", "Name",
+                E("param", "person")));
+        var getName = getNameExp.Compile();
 
         dynamic name = getName(person);
 
