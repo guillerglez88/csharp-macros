@@ -47,27 +47,26 @@ public static class ExpressionModule
         return (arg) => lambda.DynamicInvoke(arg);
     }
 
-    public static Exp Expand(this Exp exp)
-        => expand(exp, default);
+    public static Exp Expand(this Exp exp, IEnumerable<Exp> args = default)
+        => expand(exp, args);
 
     private static Exp ExpandFn(Exp fn)
     {
-        var args = fn.Skip(1).Cast<Exp>()
-            .First()
+        var args = fn.Nth<Exp>(1)
             .Partition(2)
             .Select(param => E("param", param.Cast<string>().First(), param.Skip(1).Cast<Type>().First()))
             .ToArray();
 
-        var body = fn.Skip(2).Cast<Exp>().Select(inner => expand(inner, args)).ToArray();
-        var expanded = fn.Take(1).Concat(args).Concat(body).ToArray();
+        var body = fn.Nth<Exp>(-1).Expand(args);
+        var expanded = fn.Take(1).Concat(args).Append(body).ToArray();
 
         return E(expanded);
     }
 
     private static Exp ExpandParamRef(Exp paramRef, IEnumerable<Exp> args)
     {
-        var name = paramRef.Skip(1).Cast<string>().First();
-        var param = args.First(arg => arg.Skip(1).Cast<string>().First() == name);
+        var name = paramRef.Nth<string>(1);
+        var param = args.First(arg => arg.Nth<string>(1) == name);
 
         return param;
     }
@@ -75,7 +74,7 @@ public static class ExpressionModule
     private static Exp ExpandExp(Exp exp, IEnumerable<Exp> args)
     {
         var expanded = exp
-            .Select(cmp => cmp is Exp inner ? expand(inner, args) : cmp)
+            .Select(cmp => cmp is Exp inner ? Expand(inner, args) : cmp)
             .ToArray();
 
         return E(expanded);
@@ -84,7 +83,7 @@ public static class ExpressionModule
     private static Expression TranslateFn(Exp fn)
     {
         var args = fn.Skip(1).Cast<Exp>().Take(fn.Count() - 2);
-        var body = fn.TakeLast(1).Cast<Exp>().First();
+        var body = fn.Nth<Exp>(-1);
 
         var transArgs = args.Select(translate).Cast<ParameterExpression>().ToArray();
         var transBody = translate(body);
@@ -97,16 +96,16 @@ public static class ExpressionModule
 
     private static Expression TranslateParam(Exp param)
     {
-        var name = param.Skip(1).Cast<string>().First();
-        var type = param.Skip(2).Cast<Type>().First();
+        var name = param.Nth<string>(1);
+        var type = param.Nth<Type>(2);
 
         return Expression.Parameter(type, name);
     }
 
     private static Expression TranslateGet(Exp get)
     {
-        var name = get.Skip(1).Cast<string>().First();
-        var inner = get.Skip(2).Cast<Exp>().First();
+        var name = get.Nth<string>(1);
+        var inner = get.Nth<Exp>(2);
 
         var transInner = translate(inner);
 
@@ -117,8 +116,8 @@ public static class ExpressionModule
 
     private static Expression TranslateCast(Exp cast)
     {
-        var type = cast.Skip(1).Cast<Type>().First();
-        var inner = cast.Skip(2).Cast<Exp>().First();
+        var type = cast.Nth<Type>(1);
+        var inner = cast.Nth<Exp>(2);
 
         var transInner = translate(inner);
 
