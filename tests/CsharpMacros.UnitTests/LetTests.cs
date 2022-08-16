@@ -12,11 +12,12 @@ namespace CsharpMacros.UnitTests;
 public class LetTests
 {
     [Fact]
-    public void CanTranslateLet()
+    public void CanTranslateConst()
     {
-        var exp = E("const", 5).Translate();
+        var value = E("const", 5)
+            .Compile(contract: () => default(int));
 
-        var result = Expression.Lambda<Func<int>>(exp).Compile().Invoke();
+        var result = value();
 
         Assert.Equal(5, result);
     }
