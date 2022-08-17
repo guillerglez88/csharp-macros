@@ -6,7 +6,9 @@ using System.Linq.Expressions;
 using System.Text;
 using System.Threading.Tasks;
 
-using static CsharpMacros.ExpressionModule;
+using static CsharpMacros.ArithmeticsModule;
+using static CsharpMacros.ExpModule;
+using static CsharpMacros.MacrosModule;
 
 namespace CsharpMacros.UnitTests;
 
@@ -30,17 +32,27 @@ public class SumTests
     }
 
     [Fact]
-    public void CanTranslateSum()
+    public void CanSumMultipleParams()
     {
-        var sum =
-            E("sum",
-                E("const", 2),
-                E("const", 3))
+        var sum = E("sum", 1, 2, 3, 4, 5)
             .Compile(contract: () => default(int));
 
         var result = sum();
 
-        Assert.Equal(5, result);
+        Assert.Equal(15, result);
+    }
+
+    [Fact]
+    public void CanTranslateSum()
+    {
+        var expSum =
+            E("sum",
+                E("const", 2),
+                E("const", 3));
+
+        var expressionSum = TranslateSum(MacrosModule.Translate, expSum);
+
+        Assert.IsAssignableFrom<BinaryExpression>(expressionSum);
     }
 
     [Fact]
@@ -59,21 +71,10 @@ public class SumTests
                     E("const", 4)),
                 E("const", 5));
 
-        var exp = E("sum", 1, 2, 3, 4, 5).Expand();
+        var exp = ExpandSum((exp) => exp.Expand(), E("sum", 1, 2, 3, 4, 5));
 
         Assert.Equal(
             JsonConvert.SerializeObject(expanded), 
             JsonConvert.SerializeObject(exp));
-    }
-
-    [Fact]
-    public void CanSumMultipleParams()
-    {
-        var sum = E("sum", 1, 2, 3, 4, 5)
-            .Compile(contract: () => default(int));
-
-        var result = sum();
-
-        Assert.Equal(15, result);
-    }
+    } 
 }
