@@ -39,15 +39,7 @@ public static class ExpressionModule
     } 
 
     public static Exp E(params object[] exp)
-        => new Exp(exp);
-
-    public static Func<T> Compile<T>(this Exp exp,
-        Func<T> contract)
-        => () => (T)exp.Compile().Invoke(arg: null);
-
-    public static Func<T, W> Compile<T, W>(this Exp exp,
-        Func<T, W> contract)
-        => (t) => (W)exp.Compile().Invoke(new object[] { t });
+        => new Exp(exp); 
 
     public static Func<object[], object> Compile(
         this Exp exp)
@@ -70,7 +62,7 @@ public static class ExpressionModule
     {
         var args = fn.Nth<Exp>(1)
             .Partition(2)
-            .Select(param => E("param", param.Cast<string>().First(), param.Skip(1).Cast<Type>().First()))
+            .Select(param => E("param", param.Nth<string>(0), param.Nth<Type>(1)))
             .ToArray();
 
         var body = fn.Nth<Exp>(-1).Expand(args);

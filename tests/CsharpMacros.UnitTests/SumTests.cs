@@ -13,6 +13,23 @@ namespace CsharpMacros.UnitTests;
 public class SumTests
 {
     [Fact]
+    public void CanSum()
+    {
+        var sum =
+            E("fn",
+                E("a", typeof(int),
+                  "b", typeof(int)),
+                E("sum",
+                    E("param", "a"),
+                    E("param", "b")))
+            .Compile(contract: (int a, int b) => default(int));
+
+        var result = sum(2, 3);
+
+        Assert.Equal(5, result);
+    }
+
+    [Fact]
     public void CanTranslateSum()
     {
         var sum =
