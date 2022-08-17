@@ -5,13 +5,18 @@ using System.Linq.Expressions;
 using System.Text;
 using System.Threading.Tasks;
 
-using static CsharpMacros.MacrosModule;
-using static CsharpMacros.ExpModule;
+using static CsharpMacros.Macros;
+using static CsharpMacros.Exp;
 
 namespace CsharpMacros.UnitTests;
 
 public class ValuesTests
 {
+    public ValuesTests()
+    {
+        Module.InitializeAllModules();
+    }
+
     [Fact]
     public void CanCreateConsts()
     {

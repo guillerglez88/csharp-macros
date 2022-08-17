@@ -4,13 +4,18 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-using static CsharpMacros.ExpModule;
-using static CsharpMacros.MembersModule;
+using static CsharpMacros.Exp;
+using static CsharpMacros.Members;
 
 namespace CsharpMacros.UnitTests;
 
 public class MembersTests
 {
+    public MembersTests()
+    {
+        Module.InitializeAllModules();
+    }
+
     private readonly Person person = new
     (
         Name: new(

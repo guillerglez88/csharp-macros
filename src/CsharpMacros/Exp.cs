@@ -21,4 +21,7 @@ public class Exp : IEnumerable<object>
 
     IEnumerator IEnumerable.GetEnumerator()
         => actualExp.GetEnumerator();
+
+    public static Exp E(params object[] exp)
+        => new Exp(exp); 
 }

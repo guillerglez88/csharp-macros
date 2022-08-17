@@ -4,12 +4,17 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-using static CsharpMacros.ExpModule;
+using static CsharpMacros.Exp;
 
 namespace CsharpMacros.UnitTests;
 
 public class FnTests
-{ 
+{
+    public FnTests()
+    {
+        Module.InitializeAllModules();
+    }
+
     [Fact]
     public void CanBuildFn()
     {

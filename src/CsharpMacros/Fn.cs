@@ -6,12 +6,27 @@ using System.Linq.Expressions;
 using System.Text;
 using System.Threading.Tasks;
 
-using static CsharpMacros.ExpModule;
+using static CsharpDataOriented.BasicFuncs;
+using static CsharpMacros.Macros;
+using static CsharpMacros.Exp;
 
 namespace CsharpMacros;
 
-public static class FnModule
+public class Fn
 {
+    static Fn()
+    {
+        var memoTranslateParam = Memoize<Exp, Expression>(TranslateParam);
+
+        TranslateMulti
+            .DefMethod("fn", TranslateFn)
+            .DefMethod("param", memoTranslateParam);
+
+        ExpandMulti
+            .DefMethod("fn", (arg) => ExpandFn(arg.exp))
+            .DefMethod("param", (arg) => ExpandParamRef(arg.exp, arg.args));
+    }
+
     public static Exp ExpandFn(Exp fn)
     {
         var args = fn.Nth<Exp>(1)
@@ -33,13 +48,13 @@ public static class FnModule
         return param;
     } 
 
-    public static Expression TranslateFn(Func<Exp, Expression> translate, Exp fn)
+    public static Expression TranslateFn(Exp fn)
     {
         var args = fn.Skip(1).Cast<Exp>().Take(fn.Count() - 2);
         var body = fn.Nth<Exp>(-1);
 
-        var transArgs = args.Select(translate).Cast<ParameterExpression>().ToArray();
-        var transBody = translate(body);
+        var transArgs = args.Select(arg => arg.Translate()).Cast<ParameterExpression>().ToArray();
+        var transBody = body.Translate();
 
         return Expression.Lambda(
             body: transBody,
@@ -47,7 +62,7 @@ public static class FnModule
         );
     }
 
-    public static Expression TranslateParam(Func<Exp, Expression> translate, Exp param)
+    public static Expression TranslateParam(Exp param)
     {
         var name = param.Nth<string>(1);
         var type = param.Nth<Type>(2);

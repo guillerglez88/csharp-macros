@@ -6,10 +6,19 @@ using System.Linq.Expressions;
 using System.Text;
 using System.Threading.Tasks;
 
+using static CsharpMacros.Macros;
+
 namespace CsharpMacros;
 
-public class ValuesModule
+public class Values
 {
+    static Values()
+    {
+        TranslateMulti
+            .DefMethod("const", TranslateConst)
+            .DefMethod("cast", TranslateCast);
+    }
+
     public static Expression TranslateConst(Exp constant)
     {
         var val = constant.Nth<object>(1);
@@ -17,12 +26,12 @@ public class ValuesModule
         return Expression.Constant(val);
     } 
 
-    public static Expression TranslateCast(Func<Exp, Expression> translate, Exp cast)
+    public static Expression TranslateCast(Exp cast)
     {
         var type = cast.Nth<Type>(1);
         var inner = cast.Nth<Exp>(2);
 
-        var transInner = translate(inner);
+        var transInner = inner.Translate();
 
         return Expression.Convert(transInner, type);
     } 

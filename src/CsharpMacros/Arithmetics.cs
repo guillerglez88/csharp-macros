@@ -6,12 +6,22 @@ using System.Linq.Expressions;
 using System.Text;
 using System.Threading.Tasks;
 
-using static CsharpMacros.ExpModule;
+using static CsharpMacros.Macros;
+using static CsharpMacros.Exp;
 
 namespace CsharpMacros;
 
-public static class ArithmeticsModule
+public class Arithmetics
 {
+    static Arithmetics()
+    {
+        TranslateMulti
+            .DefMethod("sum", (exp) => TranslateSum(exp));
+
+        ExpandMulti
+            .DefMethod("sum", (arg) => ExpandSum((exp) => exp.Expand(arg.args), arg.exp));
+    }
+
     public static Exp ExpandSum(Func<Exp, Exp> expand, Exp sum)
     {
         var expanded = sum.Skip(1)
@@ -21,10 +31,10 @@ public static class ArithmeticsModule
         return expanded;
     }
 
-    public static Expression TranslateSum(Func<Exp, Expression> translate, Exp sum)
+    public static Expression TranslateSum(Exp sum)
     {
-        var left = translate(sum.Nth<Exp>(1));
-        var right = translate(sum.Nth<Exp>(2));
+        var left = sum.Nth<Exp>(1).Translate();
+        var right = sum.Nth<Exp>(2).Translate();
 
         return Expression.Add(left, right);
     }

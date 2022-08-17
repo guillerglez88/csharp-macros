@@ -6,14 +6,18 @@ using System.Linq.Expressions;
 using System.Text;
 using System.Threading.Tasks;
 
-using static CsharpMacros.ArithmeticsModule;
-using static CsharpMacros.ExpModule;
-using static CsharpMacros.MacrosModule;
+using static CsharpMacros.Arithmetics;
+using static CsharpMacros.Exp;
 
 namespace CsharpMacros.UnitTests;
 
 public class SumTests
 {
+    public SumTests()
+    {
+        Module.InitializeAllModules();
+    }
+
     [Fact]
     public void CanSum()
     {
@@ -50,7 +54,7 @@ public class SumTests
                 E("const", 2),
                 E("const", 3));
 
-        var expressionSum = TranslateSum(MacrosModule.Translate, expSum);
+        var expressionSum = TranslateSum(expSum);
 
         Assert.IsAssignableFrom<BinaryExpression>(expressionSum);
     }

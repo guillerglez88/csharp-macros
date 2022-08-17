@@ -7,16 +7,23 @@ using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 
+using static CsharpMacros.Macros;
 namespace CsharpMacros;
 
-public static class MembersModule
+public class Members
 {
-    public static Expression TranslateGet(Func<Exp, Expression> translate, Exp get)
+    static Members()
+    {
+        TranslateMulti
+            .DefMethod("get", TranslateGet);
+    }
+
+    public static Expression TranslateGet(Exp get)
     {
         var name = get.Nth<string>(1);
         var inner = get.Nth<Exp>(2);
 
-        var transInner = translate(inner);
+        var transInner = inner.Translate();
 
         var prop = transInner.Type.GetProperty(name, BindingFlags.Public | BindingFlags.Instance);
 
