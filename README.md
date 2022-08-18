@@ -73,3 +73,4 @@ getName(person); // => { "Given": [ "Glen", "Ruben" ], "Family": "Rodriguez"}
 | "param"  | fn arg ref       |     X      | ("param", "param-name")  |
 | "const"  | declare constant |            | ("const", 5)             |
 | "+"      | add numbers      |     X      | ("+", 1, 2, 3, 4, 5)     |
+| "-"      | subtract numbers |     X      | ("+", 15, 1, 2, 3, 4)    |

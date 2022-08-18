@@ -16,10 +16,12 @@ public class Arithmetics
     static Arithmetics()
     {
         TranslateMulti
-            .DefMethod("+", (exp) => TranslateSum(exp));
+            .DefMethod("+", (exp) => TranslateSum(exp))
+            .DefMethod("-", (exp) => TranslateSub(exp));
 
         ExpandMulti
-            .DefMethod("+", (arg) => ExpandSum((exp) => exp.Expand(arg.args), arg.exp));
+            .DefMethod("+", (arg) => ExpandSum((exp) => exp.Expand(arg.args), arg.exp))
+            .DefMethod("-", (arg) => ExpandSub((exp) => exp.Expand(arg.args), arg.exp));
     }
 
     public static Exp ExpandSum(Func<Exp, Exp> expand, Exp sum)
@@ -37,5 +39,22 @@ public class Arithmetics
         var right = sum.Nth<Exp>(2).Translate();
 
         return Expression.Add(left, right);
+    }
+
+    public static Exp ExpandSub(Func<Exp, Exp> expand, Exp sum)
+    {
+        var expanded = sum.Skip(1)
+            .Select(arg => arg is Exp expArg ? expand(expArg) : E("const", arg))
+            .Aggregate((acc, curr) => E("-", acc, curr));
+
+        return expanded;
+    }
+
+    public static Expression TranslateSub(Exp sum)
+    {
+        var left = sum.Nth<Exp>(1).Translate();
+        var right = sum.Nth<Exp>(2).Translate();
+
+        return Expression.Subtract(left, right);
     }
 }
