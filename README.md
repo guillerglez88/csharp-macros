@@ -72,4 +72,4 @@ getName(person); // => { "Given": [ "Glen", "Ruben" ], "Family": "Rodriguez"}
 | "cast"   | convert          |            | ("cast", Type, Exp)      |
 | "param"  | fn arg ref       |     X      | ("param", "param-name")  |
 | "const"  | declare constant |            | ("const", 5)             |
-| "sum"    | add numbers      |     X      | ("sum", 1, 2, 3, 4, 5)   |
+| "+"      | add numbers      |     X      | ("+", 1, 2, 3, 4, 5)     |

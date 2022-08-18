@@ -16,17 +16,17 @@ public class Arithmetics
     static Arithmetics()
     {
         TranslateMulti
-            .DefMethod("sum", (exp) => TranslateSum(exp));
+            .DefMethod("+", (exp) => TranslateSum(exp));
 
         ExpandMulti
-            .DefMethod("sum", (arg) => ExpandSum((exp) => exp.Expand(arg.args), arg.exp));
+            .DefMethod("+", (arg) => ExpandSum((exp) => exp.Expand(arg.args), arg.exp));
     }
 
     public static Exp ExpandSum(Func<Exp, Exp> expand, Exp sum)
     {
         var expanded = sum.Skip(1)
             .Select(arg => arg is Exp expArg ? expand(expArg) : E("const", arg))
-            .Aggregate(E("const", 0), (acc, curr) => E("sum", acc, curr));
+            .Aggregate(E("const", 0), (acc, curr) => E("+", acc, curr));
 
         return expanded;
     }

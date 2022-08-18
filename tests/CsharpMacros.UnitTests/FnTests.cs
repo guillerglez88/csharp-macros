@@ -22,7 +22,7 @@ public class FnTests
             E("fn",
                 E("a", typeof(int),
                   "b", typeof(int)),
-                E("sum", 
+                E("+", 
                     E("param", "a"),
                     E("param", "b")))
             .Compile(contract: (int a, int b) => default(int));

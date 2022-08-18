@@ -25,7 +25,7 @@ public class SumTests
             E("fn",
                 E("a", typeof(int),
                   "b", typeof(int)),
-                E("sum",
+                E("+",
                     E("param", "a"),
                     E("param", "b")))
             .Compile(contract: (int a, int b) => default(int));
@@ -38,7 +38,7 @@ public class SumTests
     [Fact]
     public void CanSumMultipleParams()
     {
-        var sum = E("sum", 1, 2, 3, 4, 5)
+        var sum = E("+", 1, 2, 3, 4, 5)
             .Compile(contract: () => default(int));
 
         var result = sum();
@@ -50,7 +50,7 @@ public class SumTests
     public void CanTranslateSum()
     {
         var expSum =
-            E("sum",
+            E("+",
                 E("const", 2),
                 E("const", 3));
 
@@ -63,11 +63,11 @@ public class SumTests
     public void CanExpandSum()
     {
         var expanded =
-            E("sum",
-                E("sum",
-                    E("sum",
-                        E("sum",
-                            E("sum", 
+            E("+",
+                E("+",
+                    E("+",
+                        E("+",
+                            E("+", 
                                 E("const", 0), 
                                 E("const", 1)),
                             E("const", 2)),
@@ -75,7 +75,7 @@ public class SumTests
                     E("const", 4)),
                 E("const", 5));
 
-        var exp = ExpandSum((exp) => exp.Expand(), E("sum", 1, 2, 3, 4, 5));
+        var exp = ExpandSum((exp) => exp.Expand(), E("+", 1, 2, 3, 4, 5));
 
         Assert.Equal(
             JsonConvert.SerializeObject(expanded), 
