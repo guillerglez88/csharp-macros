@@ -65,12 +65,13 @@ getName(person); // => { "Given": [ "Glen", "Ruben" ], "Family": "Rodriguez"}
 
 ## Supported expressions
 
-| exp-type | desc             | expandable | example                  |
-| -------- | ---------------- | :--------: | ------------------------ |
-| "fn"     | lambda exp       |     X      | ("fn", Exp, Exp)         |
-| "get"    | member access    |            | ("get", "PropName", Exp) |
-| "cast"   | convert          |            | ("cast", Type, Exp)      |
-| "param"  | fn arg ref       |     X      | ("param", "param-name")  |
-| "const"  | declare constant |            | ("const", 5)             |
-| "+"      | add numbers      |     X      | ("+", 1, 2, 3, 4, 5)     |
-| "-"      | subtract numbers |     X      | ("-", 15, 1, 2, 3, 4)    |
+| exp-type | desc             | expandable | example                              |
+| -------- | ---------------- | :--------: | ------------------------------------ |
+| "fn"     | lambda exp       |     X      | ("fn", Exp, Exp)                     |
+| "get"    | member access    |            | ("get", "PropName", Exp)             |
+| "cast"   | convert          |            | ("cast", Type, Exp)                  |
+| "param"  | fn arg ref       |     X      | ("param", "param-name")              |
+| "const"  | declare constant |            | ("const", 5)                         |
+| "+"      | add numbers      |     X      | ("+", 1, 2, 3, 4, 5)                 |
+| "-"      | subtract numbers |     X      | ("-", 15, 1, 2, 3, 4)                |
+| "{"      | dictionary       |     X      | ("{", "greet", "hello", "a", 1, "}") |
