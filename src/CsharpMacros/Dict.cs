@@ -15,8 +15,23 @@ namespace CsharpMacros;
 
 public class Dict
 {
+    static Dict()
+    {
+        TranslateMulti.DefMethod("{", TranslateDict);
+
+        ExpandMulti.DefMethod("{", (arg) => ExpandDict(arg.exp, arg.args));
+    }
+
     public static Exp D(params object[] exp)
         => E(new[] { "{" }.Concat(exp).Append("}").ToArray());
+
+    public static Exp ExpandDict(Exp exp, IEnumerable<Exp> args)
+    {
+        return D(GetDictBody(exp)
+            .Select(prop => new { key = prop.First(), value = prop.Last() })
+            .SelectMany(prop => new[] { prop.key, prop.value is Exp exp ? exp.Expand(args) : E("const", prop.value) })
+            .ToArray());
+    } 
 
     public static Expression TranslateDict(Exp dict)
     {
@@ -47,8 +62,7 @@ public class Dict
 
     private static IEnumerable<TypeDictProp> GetProps(Exp dict)
     {
-        var props = dict.Skip(1).Partition(2)
-            .Where(part => part.Count() == 2)
+        var props = GetDictBody(dict)
             .Select((part, i) => new TypeDictProp(
                 Key: part.Nth<string>(0),
                 Value: part.Nth<Exp>(-1).Translate(),
@@ -57,6 +71,9 @@ public class Dict
 
         return props;
     }
+
+    private static IEnumerable<IEnumerable<object>> GetDictBody(Exp dict)
+        => dict.Skip(1).Partition(2).Where(part => part.Count() == 2);
 
     private static Type BuildDictType(IEnumerable<TypeDictProp> pairs)
     {
