@@ -19,6 +19,25 @@ public class DictTests
     }
 
     [Fact]
+    public void CanBuildDict()
+    {
+        var builPerson =
+            D("name", D( 
+                "first", "John",
+                "last", "Doe"),
+              "address", D( 
+                "line", "Park Ave. #236",
+                "postal-code", 53765,
+                "validity", D( 
+                  "start", new DateTime(2022, 01, 01))))
+            .Compile(contract: () => default(dynamic));
+
+        var person = builPerson();
+
+        Assert.Equal(53765, person.Prop2.Prop2);
+    }
+
+    [Fact]
     public void CanExpandDict()
     {
         var expanded =
@@ -41,9 +60,9 @@ public class DictTests
     {
         var expanded =
             E("{", "name", E("{", 
-                        "first", E("const", "John"),
-                        "last", E("const", "Doe"), "}"),
-                   "greet", E("const", "hello"), "}");
+                       "first", E("const", "John"),
+                       "last", E("const", "Doe"), "}"),
+                    "greet", E("const", "hello"), "}");
 
         var dict =
             D("name", D(
