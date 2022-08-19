@@ -20,93 +20,85 @@ public class Dict
 
     public static Expression TranslateDict(Exp dict)
     {
-        Expression<Func<TypeDict<
-    int, int, int, int, int,
-    int, int, int, int, int,
-    int, int, int, int, int,
-    int, int, int, int, int,
-    int, int, int, int, int,
-    int, int, int, int, int,
-    int, int, int, int, int,
-    int, int, int, int, int,
-    int, int, int, int, int,
-    int, int, int, int, int,
-    int, int, int, int, int,
-    int, int, int, int, int,
-    int, int, int, int, int,
-    int, int, int, int, int,
-    int, int, int, int, int,
-    int, int, int, int, int,
-    int, int, int, int, int,
-    int, int, int, int, int,
-    int, int, int, int, int,
-    int, int, int, int, int>>> exp = () => new TypeDict<
-    int, int, int, int, int,
-    int, int, int, int, int,
-    int, int, int, int, int,
-    int, int, int, int, int,
-    int, int, int, int, int,
-    int, int, int, int, int,
-    int, int, int, int, int,
-    int, int, int, int, int,
-    int, int, int, int, int,
-    int, int, int, int, int,
-    int, int, int, int, int,
-    int, int, int, int, int,
-    int, int, int, int, int,
-    int, int, int, int, int,
-    int, int, int, int, int,
-    int, int, int, int, int,
-    int, int, int, int, int,
-    int, int, int, int, int,
-    int, int, int, int, int,
-    int, int, int, int, int> { Prop1 = 1, Prop10 = 10 };
-
-        var pairs = dict
-            .Skip(1)
-            .Partition(2)
-            .Where(part => part.Count() == 2)
-            .Select((part, i) => new {
-                key = part.Nth<string>(0),
-                val = part.Nth<Exp>(-1).Translate(),
-                prop = $"Prop{i + 1}" })
-            .ToList();
-
-        var pad = Enumerable
-            .Range(0, 100 - pairs.Count)
-            .Select((_) => typeof(object));
-
-        var types = pairs
-            .Select(pair => pair.val.Type)
-            .Concat(pad)
-            .ToArray();
-
-        var dictType = typeof(TypeDict<
-            ,,,,,,,,,,,,,,,,,,,,,,,,,
-            ,,,,,,,,,,,,,,,,,,,,,,,,,
-            ,,,,,,,,,,,,,,,,,,,,,,,,,
-            ,,,,,,,,,,,,,,,,,,,,,,,,>)
-            .MakeGenericType(types);
-
-        var meta = JsonConvert.SerializeObject(pairs.ToDictionary(
-            pair => pair.key,
-            pair => pair.prop));
-
-        var bindings = pairs
-            .Select(pair => Expression.Bind(dictType.GetProperty(pair.prop), pair.val))
-            .Append(Expression.Bind(dictType.GetProperty("Metadata"), Expression.Constant(meta)))
-            .ToArray();
-
+        var pairs = GetProps(dict);
+        var dictType = BuildDictType(pairs);
+        var meta = BuildMeta(pairs);
         var ctor = dictType.GetConstructor(Array.Empty<Type>());
 
         var newExp = Expression.New(ctor);
+        var bindings = BuildBindings(pairs, dictType, meta);
 
-        return Expression.MemberInit(newExp, bindings);
+        var exp = Expression.MemberInit(newExp, bindings);
+
+        return exp;
+    }
+
+    private static IEnumerable<MemberBinding> BuildBindings(IEnumerable<TypeDictProp> props, Type dictType, string meta)
+    {
+        var bindings = props
+            .Append(new TypeDictProp(Key: "meta", Value: Expression.Constant(meta), Prop: "Metadata"))
+            .Select(prop => Expression.Bind(
+                member: dictType.GetProperty(prop.Prop, BindingFlags.Public | BindingFlags.Instance),
+                expression: prop.Value))
+            .ToList();
+
+        return bindings;
+    }
+
+    private static IEnumerable<TypeDictProp> GetProps(Exp dict)
+    {
+        var props = dict.Skip(1).Partition(2)
+            .Where(part => part.Count() == 2)
+            .Select((part, i) => new TypeDictProp(
+                Key: part.Nth<string>(0),
+                Value: part.Nth<Exp>(-1).Translate(),
+                Prop: $"Prop{i + 1}"))
+            .ToList();
+
+        return props;
+    }
+
+    private static Type BuildDictType(IEnumerable<TypeDictProp> pairs)
+    {
+        var pad = Enumerable
+            .Range(0, 100)
+            .Select((_) => typeof(object));
+
+        var types = pairs
+            .Select(pair => pair.Value.Type)
+            .Concat(pad)
+            .Take(100)
+            .ToArray();
+
+        var dictType = typeof(TypeDict<
+,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,>)
+            .MakeGenericType(types);
+
+        return dictType;
+    }
+
+    private static string BuildMeta(IEnumerable<TypeDictProp> pairs)
+    {
+        var meta = pairs.ToDictionary(
+            pair => pair.Key,
+            pair => pair.Prop);
+
+        var jsonMeta = JsonConvert.SerializeObject(meta);
+
+        return jsonMeta;
     }
 }
 
+record TypeDictProp(
+    string Key,
+    Expression Value,
+    string Prop);
+
 public class TypeDict<
-    T1, T2, T3, T4, T5, 
+    T1, T2, T3, T4, T5,
     T6, T7, T8, T9, T10,
     T11, T12, T13, T14, T15,
     T16, T17, T18, T19, T20,
@@ -227,4 +219,4 @@ public class TypeDict<
     public T98 Prop98 { get; set; }
     public T99 Prop99 { get; set; }
     public T100 Prop100 { get; set; }
-} 
+}
