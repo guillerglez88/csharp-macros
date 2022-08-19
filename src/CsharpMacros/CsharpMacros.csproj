@@ -9,6 +9,7 @@
   <ItemGroup>
     <PackageReference Include="CsharpDataOriented" Version="1.0.0-beta1" />
     <PackageReference Include="CsharpMultimethod" Version="1.0.0-beta1" />
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
   </ItemGroup>
 
 </Project>
