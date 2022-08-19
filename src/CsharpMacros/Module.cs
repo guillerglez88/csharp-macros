@@ -18,5 +18,6 @@ public static class Module
         Initialize<Values>();
         Initialize<Fn>();
         Initialize<Members>();
+        Initialize<Dict>();
     }
 }
