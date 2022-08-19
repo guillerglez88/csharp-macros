@@ -37,6 +37,26 @@ public class DictTests
     }
 
     [Fact]
+    public void CanDeepExpandDict()
+    {
+        var expanded =
+            E("{", "name", E("{", 
+                        "first", E("const", "John"),
+                        "last", E("const", "Doe"), "}"),
+                   "greet", E("const", "hello"), "}");
+
+        var dict =
+            D("name", D(
+                "first", "John",
+                "last", "Doe"),
+              "greet", "hello").Expand();
+
+        Assert.Equal(
+            JsonConvert.SerializeObject(expanded),
+            JsonConvert.SerializeObject(dict));
+    }
+
+    [Fact]
     public void CanTranslateDict()
     {
         var dict =
