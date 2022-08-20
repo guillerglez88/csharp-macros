@@ -19,5 +19,6 @@ public static class Module
         Initialize<Fn>();
         Initialize<Members>();
         Initialize<Dict>();
+        Initialize<Conditionals>();
     }
 }
