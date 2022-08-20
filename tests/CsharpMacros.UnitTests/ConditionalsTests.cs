@@ -78,4 +78,42 @@ public class ConditionalsTests
 
         Assert.IsAssignableFrom<BinaryExpression>(exp);
     }
+
+    [Fact]
+    public void CanTranslateOr()
+    {
+        var or =
+            E("or",
+                E("eq", E("const", 2),
+                        E("const", 3)),
+                E("const", true));
+
+        var exp = or.Translate();
+
+        Assert.IsAssignableFrom<BinaryExpression>(exp);
+    }
+
+    [Fact]
+    public void CanTranslateGt()
+    {
+        var gt =
+            E("gt", E("const", 2),
+                    E("const", 1));
+
+        var exp = gt.Translate();
+
+        Assert.IsAssignableFrom<BinaryExpression>(exp);
+    }
+
+    [Fact]
+    public void CanTranslateLt()
+    {
+        var lt =
+            E("lt", E("const", 2),
+                    E("const", 1));
+
+        var exp = lt.Translate();
+
+        Assert.IsAssignableFrom<BinaryExpression>(exp);
+    }
 }

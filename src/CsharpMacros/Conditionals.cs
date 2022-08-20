@@ -19,7 +19,10 @@ public class Conditionals
             .DefMethod("if", TranslateIf)
             .DefMethod("eq", TranslateEq)
             .DefMethod("not", TranslateNot)
-            .DefMethod("and", TranslateAnd);
+            .DefMethod("and", TranslateAnd)
+            .DefMethod("or", TranslateOr)
+            .DefMethod("gt", TranslateGt)
+            .DefMethod("lt", TranslateLt);
 
         ExpandMulti
             .DefMethod("neq", (arg) => ExpandNeq(arg.exp, arg.args));
@@ -70,6 +73,36 @@ public class Conditionals
     {
         var left = and.Nth<Exp>(1).Translate();
         var right = and.Nth<Exp>(2).Translate();
+
+        var exp = Expression.And(left, right);
+
+        return exp;
+    }
+
+    public static Expression TranslateOr(Exp or)
+    {
+        var left = or.Nth<Exp>(1).Translate();
+        var right = or.Nth<Exp>(2).Translate();
+
+        var exp = Expression.And(left, right);
+
+        return exp;
+    }
+
+    public static Expression TranslateGt(Exp gt)
+    {
+        var left = gt.Nth<Exp>(1).Translate();
+        var right = gt.Nth<Exp>(2).Translate();
+
+        var exp = Expression.And(left, right);
+
+        return exp;
+    }
+
+    public static Expression TranslateLt(Exp lt)
+    {
+        var left = lt.Nth<Exp>(1).Translate();
+        var right = lt.Nth<Exp>(2).Translate();
 
         var exp = Expression.And(left, right);
 
