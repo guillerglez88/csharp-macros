@@ -65,13 +65,22 @@ getName(person); // => { "Given": [ "Glen", "Ruben" ], "Family": "Rodriguez"}
 
 ## Supported expressions
 
-| exp-type | desc             | expandable | example                              |
-| -------- | ---------------- | :--------: | ------------------------------------ |
-| "fn"     | lambda exp       |     X      | ("fn", Exp, Exp)                     |
-| "get"    | member access    |            | ("get", "PropName", Exp)             |
-| "cast"   | convert          |            | ("cast", Type, Exp)                  |
-| "param"  | fn arg ref       |     X      | ("param", "param-name")              |
-| "const"  | declare constant |            | ("const", 5)                         |
-| "+"      | add numbers      |     X      | ("+", 1, 2, 3, 4, 5)                 |
-| "-"      | subtract numbers |     X      | ("-", 15, 1, 2, 3, 4)                |
-| "{"      | dictionary       |     X      | ("{", "greet", "hello", "a", 1, "}") |
+| exp-type | desc                          | expandable | example                                     |
+| -------- | ----------------------------- | :--------: | ------------------------------------------- |
+| "fn"     | lambda exp                    |     X      | ("fn", Exp, Exp)                            |
+| "get"    | member access                 |            | ("get", "PropName", Exp)                    |
+| "cast"   | convert                       |            | ("cast", Type, Exp)                         |
+| "param"  | fn arg ref                    |     X      | ("param", "param-name")                     |
+| "const"  | declare constant              |            | ("const", 5)                                |
+| "+"      | add numbers                   |     X      | ("+", 1, 2, 3, 4, 5)                        |
+| "-"      | subtract numbers              |     X      | ("-", 15, 1, 2, 3, 4)                       |
+| "{"      | dictionary                    |     X      | ("{", "greet", "hello", "a", 1, "}")        |
+| "or"     | boolean or                    |            | ("or", E("const", false), E("const", true)) |
+| "and"    | boolean and                   |            | ("and", E("const", true), E("const", true)) |
+| "not"    | boolean not                   |            | ("not", E("const", false))                  |
+| "eq"     | boolean equal                 |            | ("eq", E("const", 2), E("const", 2))        |
+| "neq"    | boolean not equal             |     X      | ("neq", E("const", 2), E("const", 3))       |
+| "gt"     | boolean greater than          |            | ("gt", E("const", 5), E("const", 3))        |
+| "lt"     | boolean less than             |            | ("lt", E("const", 5), E("const", 10))       |
+| "geq"    | boolean greater than or equal |     X      | ("geq", E("const", 5), E("const", 5))       |
+| "leq"    | boolean less than or equal    |     X      | ("leq", E("const", 5), E("const", 5))       |
