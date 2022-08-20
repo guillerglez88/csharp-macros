@@ -106,6 +106,28 @@ public class ConditionalsTests
     }
 
     [Fact]
+    public void CanExpandGeq()
+    {
+        var expanded = 
+            E("or",
+                E("gt", 
+                    E("const", 2),
+                    E("const", 1)),
+                E("eq",
+                    E("const", 2),
+                    E("const", 1)));
+
+        var geq =
+            E("geq", 
+                E("const", 2),
+                E("const", 1)).Expand();
+
+        Assert.Equal(
+            JsonConvert.SerializeObject(expanded),
+            JsonConvert.SerializeObject(geq));
+    }
+
+    [Fact]
     public void CanTranslateLt()
     {
         var lt =
@@ -115,5 +137,27 @@ public class ConditionalsTests
         var exp = lt.Translate();
 
         Assert.IsAssignableFrom<BinaryExpression>(exp);
+    }
+
+    [Fact]
+    public void CanExpandLeq()
+    {
+        var expanded = 
+            E("or",
+                E("lt", 
+                    E("const", 2),
+                    E("const", 1)),
+                E("eq",
+                    E("const", 2),
+                    E("const", 1)));
+
+        var leq =
+            E("leq", 
+                E("const", 2),
+                E("const", 1)).Expand();
+
+        Assert.Equal(
+            JsonConvert.SerializeObject(expanded),
+            JsonConvert.SerializeObject(leq));
     }
 }

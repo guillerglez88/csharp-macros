@@ -25,7 +25,9 @@ public class Conditionals
             .DefMethod("lt", TranslateLt);
 
         ExpandMulti
-            .DefMethod("neq", (arg) => ExpandNeq(arg.exp, arg.args));
+            .DefMethod("neq", (arg) => ExpandNeq(arg.exp, arg.args))
+            .DefMethod("geq", (arg) => ExpandGeq(arg.exp, arg.args))
+            .DefMethod("leq", (arg) => ExpandLeq(arg.exp, arg.args));
     }
 
     public static Expression TranslateIf(Exp ifElse)
@@ -56,17 +58,6 @@ public class Conditionals
         var exp = Expression.Not(arg);
 
         return exp;
-    }
-
-    public static Exp ExpandNeq(Exp neq, IEnumerable<Exp> args)
-    {
-        var expandedCmps = neq
-            .Skip(1)
-            .Select(cmp => cmp is Exp exp ? exp.Expand(args) : cmp);
-
-        var expanded = E("not", E(new object[] { "eq" }.Concat(expandedCmps).ToArray()));
-
-        return expanded;
     }
 
     public static Expression TranslateAnd(Exp and)
@@ -107,5 +98,44 @@ public class Conditionals
         var exp = Expression.And(left, right);
 
         return exp;
+    }
+
+    public static Exp ExpandNeq(Exp neq, IEnumerable<Exp> args)
+    {
+        var expandedCmps = neq
+            .Skip(1)
+            .Select(cmp => cmp is Exp exp ? exp.Expand(args) : cmp);
+
+        var expanded = E("not", E(new object[] { "eq" }.Concat(expandedCmps).ToArray()));
+
+        return expanded;
+    }
+
+    public static Exp ExpandGeq(Exp geq, IEnumerable<Exp> args)
+    {
+        var expandedCmps = geq
+            .Skip(1)
+            .Select(cmp => cmp is Exp exp ? exp.Expand(args) : cmp);
+
+        var expanded = 
+            E("or", 
+                E(new object[] { "gt" }.Concat(expandedCmps).ToArray()),
+                E(new object[] { "eq" }.Concat(expandedCmps).ToArray()));
+
+        return expanded;
+    }
+
+    public static Exp ExpandLeq(Exp leq, IEnumerable<Exp> args)
+    {
+        var expandedCmps = leq
+            .Skip(1)
+            .Select(cmp => cmp is Exp exp ? exp.Expand(args) : cmp);
+
+        var expanded = 
+            E("or", 
+                E(new object[] { "lt" }.Concat(expandedCmps).ToArray()),
+                E(new object[] { "eq" }.Concat(expandedCmps).ToArray()));
+
+        return expanded;
     }
 }
