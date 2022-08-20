@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Newtonsoft.Json;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
@@ -27,5 +28,20 @@ public class ConditionalsTests
         var expression = ifElse.Translate();
 
         Assert.IsAssignableFrom<ConditionalExpression>(expression);
+    }
+
+    [Fact]
+    public void CanExpandIf()
+    {
+        var expanded =
+            E("if", E("const", false),
+                E("const", "yes"),
+                E("const", "no"));
+
+        var exp = E("if", false, "yes", "no").Expand();
+
+        Assert.Equal(
+            JsonConvert.SerializeObject(expanded),
+            JsonConvert.SerializeObject(exp));
     }
 }
