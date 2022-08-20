@@ -16,21 +16,12 @@ public class Conditionals
     static Conditionals()
     {
         TranslateMulti
-            .DefMethod("if", TranslateIf);
+            .DefMethod("if", TranslateIf)
+            .DefMethod("eq", TranslateEq)
+            .DefMethod("not", TranslateNot);
 
         ExpandMulti
-            .DefMethod("if", (arg) => ExpandIf(arg.exp, arg.args));
-    }
-
-    public static Exp ExpandIf(Exp ifElse, IEnumerable<Exp> args)
-    {
-        var expandedComponents = ifElse
-            .Skip(1)
-            .Select(cmp => cmp is Exp exp ? exp.Expand(args) : E("const", cmp));
-
-        var expanded = E(new object[] { "if" }.Concat(expandedComponents).ToArray());
-
-        return expanded;
+            .DefMethod("neq", (arg) => ExpandNeq(arg.exp, arg.args));
     }
 
     public static Expression TranslateIf(Exp ifElse)
@@ -42,5 +33,35 @@ public class Conditionals
         var exp = Expression.Condition(test, ifTrue, ifFalse);
 
         return exp;
+    }
+
+    public static Expression TranslateEq(Exp eq)
+    {
+        var left = eq.Nth<Exp>(1).Translate();
+        var right = eq.Nth<Exp>(2).Translate();
+
+        var exp = Expression.Equal(left, right);
+
+        return exp;
+    }
+
+    public static Expression TranslateNot(Exp not)
+    {
+        var arg = not.Nth<Exp>(1).Translate();
+
+        var exp = Expression.Not(arg);
+
+        return exp;
+    }
+
+    public static Exp ExpandNeq(Exp neq, IEnumerable<Exp> args)
+    {
+        var expandedCmps = neq
+            .Skip(1)
+            .Select(cmp => cmp is Exp exp ? exp.Expand(args) : cmp);
+
+        var expanded = E("not", E(new object[] { "eq" }.Concat(expandedCmps).ToArray()));
+
+        return expanded;
     }
 }

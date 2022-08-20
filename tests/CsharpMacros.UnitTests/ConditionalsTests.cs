@@ -31,17 +31,37 @@ public class ConditionalsTests
     }
 
     [Fact]
-    public void CanExpandIf()
+    public void CanTranslateEq()
+    {
+        var eq = E("eq", E("const", 3), E("const", 3));
+
+        var exp = eq.Translate();
+
+        Assert.IsAssignableFrom<BinaryExpression>(exp);
+    }
+
+    [Fact]
+    public void CanTranslateNot()
+    {
+        var not = E("not", E("const", false));
+
+        var exp = not.Translate();
+
+        Assert.IsAssignableFrom<UnaryExpression>(exp);
+    }
+
+    [Fact]
+    public void CanExpandNeq()
     {
         var expanded =
-            E("if", E("const", false),
-                E("const", "yes"),
-                E("const", "no"));
+            E("not",
+                E("eq", E("const", 3),
+                        E("const", 4)));
 
-        var exp = E("if", false, "yes", "no").Expand();
+        var neq = E("neq", E("const", 3), E("const", 4)).Expand();
 
         Assert.Equal(
             JsonConvert.SerializeObject(expanded),
-            JsonConvert.SerializeObject(exp));
+            JsonConvert.SerializeObject(neq));
     }
 }
