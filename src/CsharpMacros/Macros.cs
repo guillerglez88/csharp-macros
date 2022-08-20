@@ -20,12 +20,12 @@ public static class Macros
             contract: (Exp exp) => default(Expression),
             dispatch: (exp) => exp.Nth<string>(0));
 
-        ExpandMulti = 
+        ExpandMulti =
              DefMulti(
                 contract: ((Exp exp, IEnumerable<Exp> args) arg) => default(Exp),
-                dispatch: (arg) => arg.exp.Cast<string>().First())
-            .DefDefault((_, arg) => ExpandExp(arg.exp, arg.args)); 
-    } 
+                dispatch: (arg) => arg.exp.Nth<string>(0))
+            .DefDefault((_, arg) => ExpandExp(arg.exp, arg.args));
+    }
 
     public static Func<object[], object> Compile(
         this Exp exp)
@@ -42,14 +42,17 @@ public static class Macros
         => ExpandMulti.Invoke((exp, args));
 
     public static Expression Translate(this Exp exp)
-        => TranslateMulti.Invoke(exp); 
+        => TranslateMulti.Invoke(exp);
 
     private static Exp ExpandExp(Exp exp, IEnumerable<Exp> args)
     {
-        var expanded = exp
+        var expandedComponents = exp
+            .Skip(1)
             .Select(cmp => cmp is Exp inner ? Expand(inner, args) : cmp)
             .ToArray();
 
-        return E(expanded);
-    } 
+        var expanded = E(new[] { exp.First() }.Concat(expandedComponents).ToArray());
+
+        return expanded;
+    }
 }
