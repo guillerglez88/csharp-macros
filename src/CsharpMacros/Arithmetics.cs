@@ -16,19 +16,19 @@ public class Arithmetics
     static Arithmetics()
     {
         TranslateMulti
-            .DefMethod("+", (exp) => TranslateSum(exp))
-            .DefMethod("-", (exp) => TranslateSub(exp));
+            .DefMethod("sum", (exp) => TranslateSum(exp))
+            .DefMethod("sub", (exp) => TranslateSub(exp));
 
         ExpandMulti
-            .DefMethod("+", (arg) => ExpandSum((exp) => exp.Expand(arg.args), arg.exp))
-            .DefMethod("-", (arg) => ExpandSub((exp) => exp.Expand(arg.args), arg.exp));
+            .DefMethod("sum", (arg) => ExpandSum((exp) => exp.Expand(arg.args), arg.exp))
+            .DefMethod("sub", (arg) => ExpandSub((exp) => exp.Expand(arg.args), arg.exp));
     }
 
     public static Exp ExpandSum(Func<Exp, Exp> expand, Exp sum)
     {
         var expanded = sum.Skip(1)
             .Select(arg => arg is Exp expArg ? expand(expArg) : E("const", arg))
-            .Aggregate(E("const", 0), (acc, curr) => E("+", acc, curr));
+            .Aggregate(E("const", 0), (acc, curr) => E("sum", acc, curr));
 
         return expanded;
     }
@@ -45,7 +45,7 @@ public class Arithmetics
     {
         var expanded = sum.Skip(1)
             .Select(arg => arg is Exp expArg ? expand(expArg) : E("const", arg))
-            .Aggregate((acc, curr) => E("-", acc, curr));
+            .Aggregate((acc, curr) => E("sub", acc, curr));
 
         return expanded;
     }

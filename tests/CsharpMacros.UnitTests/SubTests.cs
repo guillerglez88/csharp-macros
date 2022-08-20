@@ -25,7 +25,7 @@ public class SubTests
             E("fn",
                 E("a", typeof(int),
                   "b", typeof(int)),
-                E("-",
+                E("sub",
                     E("param", "a"),
                     E("param", "b")))
             .Compile(contract: (int a, int b) => default(int));
@@ -38,7 +38,7 @@ public class SubTests
     [Fact]
     public void CanSubtractMultipleParams()
     {
-        var sub = E("-", 15, 1, 2, 3, 4)
+        var sub = E("sub", 15, 1, 2, 3, 4)
             .Compile(contract: () => default(int));
 
         var result = sub();
@@ -50,7 +50,7 @@ public class SubTests
     public void CanTranslateSub()
     {
         var expSum =
-            E("-",
+            E("sub",
                 E("const", 2),
                 E("const", 3));
 
@@ -63,17 +63,17 @@ public class SubTests
     public void CanExpandSub()
     {
         var expanded =
-            E("-",
-                E("-",
-                    E("-",
-                        E("-",
+            E("sub",
+                E("sub",
+                    E("sub",
+                        E("sub",
                             E("const", 1),
                             E("const", 2)),
                         E("const", 3)),
                     E("const", 4)),
                 E("const", 5));
 
-        var exp = ExpandSub((exp) => exp.Expand(), E("-", 1, 2, 3, 4, 5));
+        var exp = ExpandSub((exp) => exp.Expand(), E("sub", 1, 2, 3, 4, 5));
 
         Assert.Equal(
             JsonConvert.SerializeObject(expanded), 
