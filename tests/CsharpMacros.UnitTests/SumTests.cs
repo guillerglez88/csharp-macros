@@ -75,7 +75,7 @@ public class SumTests
                     E("const", 4)),
                 E("const", 5));
 
-        var exp = ExpandSum((exp) => exp.Expand(), E("sum", 1, 2, 3, 4, 5));
+        var exp = E("sum", 1, 2, 3, 4, 5).Expand();
 
         Assert.Equal(
             JsonConvert.SerializeObject(expanded), 

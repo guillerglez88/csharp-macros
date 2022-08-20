@@ -74,6 +74,7 @@ getName(person); // => { "Given": [ "Glen", "Ruben" ], "Family": "Rodriguez"}
 | "const"  | declare constant              |            | ("const", 5)                                |
 | "sum"    | add numbers                   |     X      | ("sum", 1, 2, 3, 4, 5)                      |
 | "sub"    | subtract numbers              |     X      | ("sub", 15, 1, 2, 3, 4)                     |
+| "mod"    | modulo                        |     X      | ("mod", 5, 2)                               |
 | "{"      | dictionary                    |     X      | ("{", "greet", "hello", "a", 1, "}")        |
 | "or"     | boolean or                    |            | ("or", E("const", false), E("const", true)) |
 | "and"    | boolean and                   |            | ("and", E("const", true), E("const", true)) |

@@ -73,7 +73,7 @@ public class SubTests
                     E("const", 4)),
                 E("const", 5));
 
-        var exp = ExpandSub((exp) => exp.Expand(), E("sub", 1, 2, 3, 4, 5));
+        var exp = E("sub", 1, 2, 3, 4, 5).Expand();
 
         Assert.Equal(
             JsonConvert.SerializeObject(expanded), 
