@@ -18,7 +18,8 @@ public class Conditionals
         TranslateMulti
             .DefMethod("if", TranslateIf)
             .DefMethod("eq", TranslateEq)
-            .DefMethod("not", TranslateNot);
+            .DefMethod("not", TranslateNot)
+            .DefMethod("and", TranslateAnd);
 
         ExpandMulti
             .DefMethod("neq", (arg) => ExpandNeq(arg.exp, arg.args));
@@ -63,5 +64,15 @@ public class Conditionals
         var expanded = E("not", E(new object[] { "eq" }.Concat(expandedCmps).ToArray()));
 
         return expanded;
+    }
+
+    public static Expression TranslateAnd(Exp and)
+    {
+        var left = and.Nth<Exp>(1).Translate();
+        var right = and.Nth<Exp>(2).Translate();
+
+        var exp = Expression.And(left, right);
+
+        return exp;
     }
 }

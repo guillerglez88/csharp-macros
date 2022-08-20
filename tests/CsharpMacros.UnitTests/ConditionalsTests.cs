@@ -64,4 +64,18 @@ public class ConditionalsTests
             JsonConvert.SerializeObject(expanded),
             JsonConvert.SerializeObject(neq));
     }
+
+    [Fact]
+    public void CanTranslateAnd()
+    {
+        var and =
+            E("and",
+                E("eq", E("const", 2),
+                        E("const", 2)),
+                E("const", true));
+
+        var exp = and.Translate();
+
+        Assert.IsAssignableFrom<BinaryExpression>(exp);
+    }
 }
