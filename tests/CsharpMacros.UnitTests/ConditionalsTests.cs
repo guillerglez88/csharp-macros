@@ -18,6 +18,37 @@ public class ConditionalsTests
     }
 
     [Fact]
+    public void CanTestConditions()
+    {
+        var check =
+            E("fn",
+                E("new-members", typeof(int),
+                  "app-downloads", typeof(int)),
+                E("or",
+                    E("and",
+                        E("gt", 
+                            E("param", "new-members"),
+                            E("const", 225)),
+                        E("gt",
+                            E("param", "app-downloads"),
+                            E("const", 10000))),
+                    E("and",
+                        E("leq",
+                            E("param", "new-members"),
+                            E("const", 100)),
+                        E("gt",
+                            E("param", "app-downloads"),
+                            E("const", 25000)))))
+            .Compile(contract: (int newMembers, int appDownloads) => default(bool));
+
+        var failedLaundesLatestApp = check(5000, 3000);
+        var successLaundesLatestApp = check(5000, 30000);
+
+        Assert.False(failedLaundesLatestApp);
+        Assert.True(successLaundesLatestApp);
+    }
+
+    [Fact]
     public void CanTranslateIf()
     {
         var ifElse =

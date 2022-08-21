@@ -75,7 +75,7 @@ public class Conditionals
         var left = or.Nth<Exp>(1).Translate();
         var right = or.Nth<Exp>(2).Translate();
 
-        var exp = Expression.And(left, right);
+        var exp = Expression.Or(left, right);
 
         return exp;
     }
