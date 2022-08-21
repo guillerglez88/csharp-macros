@@ -22,12 +22,12 @@ public class Conditionals
             .DefMethod("and", TranslateAnd)
             .DefMethod("or", TranslateOr)
             .DefMethod("gt", TranslateGt)
-            .DefMethod("lt", TranslateLt);
+            .DefMethod("geq", TranslateGeq)
+            .DefMethod("lt", TranslateLt)
+            .DefMethod("leq", TranslateLeq);
 
         ExpandMulti
-            .DefMethod("neq", (arg) => ExpandNeq(arg.exp, arg.args))
-            .DefMethod("geq", (arg) => ExpandGeq(arg.exp, arg.args))
-            .DefMethod("leq", (arg) => ExpandLeq(arg.exp, arg.args));
+            .DefMethod("neq", (arg) => ExpandNeq(arg.exp, arg.args));
     }
 
     public static Expression TranslateIf(Exp ifElse)
@@ -85,7 +85,7 @@ public class Conditionals
         var left = gt.Nth<Exp>(1).Translate();
         var right = gt.Nth<Exp>(2).Translate();
 
-        var exp = Expression.And(left, right);
+        var exp = Expression.GreaterThan(left, right);
 
         return exp;
     }
@@ -95,7 +95,7 @@ public class Conditionals
         var left = lt.Nth<Exp>(1).Translate();
         var right = lt.Nth<Exp>(2).Translate();
 
-        var exp = Expression.And(left, right);
+        var exp = Expression.LessThan(left, right);
 
         return exp;
     }
@@ -111,31 +111,24 @@ public class Conditionals
         return expanded;
     }
 
-    public static Exp ExpandGeq(Exp geq, IEnumerable<Exp> args)
+
+    public static Expression TranslateGeq(Exp gt)
     {
-        var expandedCmps = geq
-            .Skip(1)
-            .Select(cmp => cmp is Exp exp ? exp.Expand(args) : cmp);
+        var left = gt.Nth<Exp>(1).Translate();
+        var right = gt.Nth<Exp>(2).Translate();
 
-        var expanded = 
-            E("or", 
-                E(new object[] { "gt" }.Concat(expandedCmps).ToArray()),
-                E(new object[] { "eq" }.Concat(expandedCmps).ToArray()));
+        var exp = Expression.GreaterThanOrEqual(left, right);
 
-        return expanded;
+        return exp;
     }
 
-    public static Exp ExpandLeq(Exp leq, IEnumerable<Exp> args)
+    public static Expression TranslateLeq(Exp gt)
     {
-        var expandedCmps = leq
-            .Skip(1)
-            .Select(cmp => cmp is Exp exp ? exp.Expand(args) : cmp);
+        var left = gt.Nth<Exp>(1).Translate();
+        var right = gt.Nth<Exp>(2).Translate();
 
-        var expanded = 
-            E("or", 
-                E(new object[] { "lt" }.Concat(expandedCmps).ToArray()),
-                E(new object[] { "eq" }.Concat(expandedCmps).ToArray()));
+        var exp = Expression.LessThanOrEqual(left, right);
 
-        return expanded;
+        return exp;
     }
 }
