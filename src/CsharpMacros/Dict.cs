@@ -20,6 +20,8 @@ public class Dict
         TranslateMulti.DefMethod("{", TranslateDict);
 
         ExpandMulti.DefMethod("{", (arg) => ExpandDict(arg.exp, arg.args));
+
+        StringifyMulti.DefMethod("{", StringifyDict);
     }
 
     public static Exp D(params object[] exp)
@@ -46,6 +48,17 @@ public class Dict
         var exp = Expression.MemberInit(newExp, bindings);
 
         return exp;
+    }
+
+    public static string StringifyDict(Exp dict)
+    {
+        var entries = GetDictBody(dict)
+            .Select(pair => new { 
+                key = pair.Nth<string>(1),
+                value = pair.Last() is Exp exp ? exp.Stringify() : $"{pair.Last()}"})
+            .Select(pair => $"{pair.key}: {pair.value}");
+
+        return $"{{{string.Join("\n", entries)}}}";
     }
 
     private static IEnumerable<MemberBinding> BuildBindings(IEnumerable<TypeDictProp> props, Type dictType, string meta)

@@ -13,6 +13,7 @@ public static class Macros
 {
     public static readonly Multi<Exp, string, Expression?> TranslateMulti;
     public static readonly Multi<(Exp exp, IEnumerable<Exp> args), string, Exp?> ExpandMulti;
+    public static readonly Multi<Exp, string, string?> StringifyMulti;
 
     static Macros()
     {
@@ -20,11 +21,15 @@ public static class Macros
             contract: (Exp exp) => default(Expression),
             dispatch: (exp) => exp.Nth<string>(0));
 
-        ExpandMulti =
-             DefMulti(
-                contract: ((Exp exp, IEnumerable<Exp> args) arg) => default(Exp),
-                dispatch: (arg) => arg.exp.Nth<string>(0))
-            .DefDefault((_, arg) => ExpandExp(arg.exp, arg.args));
+        ExpandMulti = DefMulti(
+            contract: ((Exp exp, IEnumerable<Exp> args) arg) => default(Exp),
+            dispatch: (arg) => arg.exp.Nth<string>(0));
+
+        StringifyMulti = DefMulti(
+            contract: (Exp exp) => default(string),
+            dispatch: (exp) => exp.Nth<string>(0));
+
+        ExpandMulti.DefDefault((_, arg) => ExpandExp(arg.exp, arg.args));
     }
 
     public static Func<object[], object> Compile(
@@ -43,6 +48,9 @@ public static class Macros
 
     public static Expression Translate(this Exp exp)
         => TranslateMulti.Invoke(exp);
+
+    public static string Stringify(this Exp exp)
+        => StringifyMulti.Invoke(exp);
 
     private static Exp ExpandExp(Exp exp, IEnumerable<Exp> args)
     {

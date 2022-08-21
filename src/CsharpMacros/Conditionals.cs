@@ -28,6 +28,17 @@ public class Conditionals
 
         ExpandMulti
             .DefMethod("neq", (arg) => ExpandNeq(arg.exp, arg.args));
+
+        StringifyMulti
+            .DefMethod("if", StringifyIf)
+            .DefMethod("eq", StringifyEq)
+            .DefMethod("not", StringifyNot)
+            .DefMethod("and", StringifyAnd)
+            .DefMethod("or", StringifyOr)
+            .DefMethod("gt", StringifyGt)
+            .DefMethod("geq", StringifyGeq)
+            .DefMethod("lt", StringifyLt)
+            .DefMethod("leq", StringifyLeq);
     }
 
     public static Expression TranslateIf(Exp ifElse)
@@ -130,5 +141,78 @@ public class Conditionals
         var exp = Expression.LessThanOrEqual(left, right);
 
         return exp;
+    }
+
+
+    public static string StringifyIf(Exp exp)
+    {
+        var strCond = exp.Nth<Exp>(1).Stringify();
+        var strIfTrue = exp.Nth<Exp>(2).Stringify();
+        var strIfFalse = exp.Nth<Exp>(3).Stringify();
+
+        return $"if ({strCond})\n    ({strIfTrue})\nelse    ({strIfFalse})";
+    }
+
+    public static string StringifyLeq(Exp exp)
+    {
+        var strLeft = exp.Nth<Exp>(1).Stringify();
+        var strRight = exp.Nth<Exp>(2).Stringify();
+
+        return $"{strLeft} <= {strRight}";
+    }
+
+    public static string StringifyLt(Exp exp)
+    {
+        var strLeft = exp.Nth<Exp>(1).Stringify();
+        var strRight = exp.Nth<Exp>(2).Stringify();
+
+        return $"{strLeft} < {strRight}";
+    }
+
+    public static string StringifyGeq(Exp exp)
+    {
+        var strLeft = exp.Nth<Exp>(1).Stringify();
+        var strRight = exp.Nth<Exp>(2).Stringify();
+
+        return $"{strLeft} >= {strRight}";
+    }
+
+    public static string StringifyGt(Exp exp)
+    {
+        var strLeft = exp.Nth<Exp>(1).Stringify();
+        var strRight = exp.Nth<Exp>(2).Stringify();
+
+        return $"{strLeft} > {strRight}";
+    }
+
+    public static string StringifyOr(Exp exp)
+    {
+        var strLeft = exp.Nth<Exp>(1).Stringify();
+        var strRight = exp.Nth<Exp>(2).Stringify();
+
+        return $"({strLeft}) or ({strRight})";
+    }
+
+    public static string StringifyAnd(Exp exp)
+    {
+        var strLeft = exp.Nth<Exp>(1).Stringify();
+        var strRight = exp.Nth<Exp>(2).Stringify();
+
+        return $"({strLeft}) and ({strRight})";
+    }
+
+    public static string StringifyNot(Exp exp)
+    {
+        var strExp = exp.Nth<Exp>(1).Stringify();
+
+        return $"not ({strExp})";
+    }
+
+    public static string StringifyEq(Exp exp)
+    {
+        var strLeft = exp.Nth<Exp>(1).Stringify();
+        var strRight = exp.Nth<Exp>(2).Stringify();
+
+        return $"{strLeft} = {strRight}";
     }
 }

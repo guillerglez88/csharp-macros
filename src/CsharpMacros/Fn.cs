@@ -25,6 +25,10 @@ public class Fn
         ExpandMulti
             .DefMethod("fn", (arg) => ExpandFn(arg.exp))
             .DefMethod("param", (arg) => ExpandParamRef(arg.exp, arg.args));
+
+        StringifyMulti
+            .DefMethod("fn", StringifyFn)
+            .DefMethod("param", StringifyParam);
     }
 
     public static Exp ExpandFn(Exp fn)
@@ -68,5 +72,21 @@ public class Fn
         var type = param.Nth<Type>(2);
 
         return Expression.Parameter(type, name);
+    }
+
+    public static string StringifyFn(Exp fn)
+    {
+        var args = fn.Nth<Exp>(1)
+            .Partition(2)
+            .Select(param => $"{param.Nth<Type>(1).Name} {param.Nth<string>(0)}");
+
+        var strBody = fn.Nth<Exp>(-1).Stringify();
+
+        return $"({string.Join(", ", args)}) => ({strBody})";
+    }
+
+    public static string StringifyParam(Exp param)
+    {
+        return param.Nth<string>(1);
     }
 }

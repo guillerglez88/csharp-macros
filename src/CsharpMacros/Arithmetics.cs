@@ -24,6 +24,11 @@ public class Arithmetics
             .DefMethod("sum", (arg) => ExpandSum(arg.exp, arg.args))
             .DefMethod("sub", (arg) => ExpandSub(arg.exp, arg.args))
             .DefMethod("mod", (arg) => ExpandMod(arg.exp, arg.args));
+
+        StringifyMulti
+            .DefMethod("sum", (exp) => StringifySum(exp))
+            .DefMethod("sub", (exp) => StringifySub(exp))
+            .DefMethod("mod", (exp) => StringifyMod(exp));
     }
 
     public static Expression TranslateSum(Exp sum)
@@ -76,5 +81,31 @@ public class Arithmetics
         var expanded = E(new object[] { "mod" }.Concat(expandedCmps).ToArray());
 
         return expanded;
+    }
+
+    public static string StringifyMod(Exp exp)
+    {
+        var strLeft = exp.Nth<Exp>(1).Stringify();
+        var strRight = exp.Nth<Exp>(2).Stringify();
+
+        return $"{strLeft} % {strRight}";
+    }
+
+    public static string StringifySub(Exp exp)
+    {
+        var strCmps = exp
+            .Skip(1)
+            .Select(cmp => cmp is Exp exp ? exp.Stringify() : $"{cmp}");
+
+        return string.Join("-", strCmps);
+    }
+
+    public static string StringifySum(Exp exp)
+    {
+        var strCmps = exp
+            .Skip(1)
+            .Select(cmp => cmp is Exp exp ? exp.Stringify() : $"{cmp}");
+
+        return string.Join("+", strCmps);
     }
 }

@@ -16,6 +16,9 @@ public class Members
     {
         TranslateMulti
             .DefMethod("get", TranslateGet);
+
+        StringifyMulti
+            .DefMethod("get", StringifyGet);
     }
 
     public static Expression TranslateGet(Exp get)
@@ -28,5 +31,13 @@ public class Members
         var prop = transInner.Type.GetProperty(name, BindingFlags.Public | BindingFlags.Instance);
 
         return Expression.MakeMemberAccess(transInner, prop);
+    }
+
+    public static string StringifyGet(Exp get)
+    {
+        var name = get.Nth<string>(1);
+        var strInner = get.Nth<Exp>(2).Stringify();
+
+        return $"{strInner}.{name}";
     }
 }

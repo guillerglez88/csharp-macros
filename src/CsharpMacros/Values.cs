@@ -17,6 +17,10 @@ public class Values
         TranslateMulti
             .DefMethod("const", TranslateConst)
             .DefMethod("cast", TranslateCast);
+        
+        StringifyMulti
+            .DefMethod("const", StringifyConst)
+            .DefMethod("cast", StringifyCast);
     }
 
     public static Expression TranslateConst(Exp constant)
@@ -35,4 +39,19 @@ public class Values
 
         return Expression.Convert(transInner, type);
     } 
+
+    public static string StringifyCast(Exp cast)
+    {
+        var type = cast.Nth<Type>(1);
+        var strInner = cast.Nth<Exp>(2).Stringify();
+
+        return $"({strInner} as {type.Name})";
+    }
+
+    public static string StringifyConst(Exp constant)
+    {
+        var val = constant.Nth<object>(1);
+
+        return $"{val}";
+    }
 }

@@ -23,5 +23,8 @@ public class Exp : IEnumerable<object>
         => actualExp.GetEnumerator();
 
     public static Exp E(params object[] exp)
-        => new Exp(exp); 
+        => new Exp(exp);
+
+    public override string ToString()
+        => this.Stringify();
 }
