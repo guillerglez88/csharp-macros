@@ -56,8 +56,8 @@ public static class Macros
     public static string Stringify(this Exp exp)
         => StringifyMulti.Invoke(exp);
 
-    public static Exp Q(params object[] exp)
-        => E(new object[] { "'" }.Concat(exp).ToArray());
+    public static Exp Q(object exp)
+        => E(new object[] { "'", exp });
 
     private static Exp ExpandExp(Exp exp, IEnumerable<Exp> args)
     {
