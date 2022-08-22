@@ -61,7 +61,7 @@ public static class Macros
         => E(new object[] { "'", exp }); 
 
     public static void Macro(string name, Func<Exp, IEnumerable<Exp>, Exp> macro)
-        => ExpandMulti.DefMethod(name, (arg) => macro(arg.exp, arg.args));
+        => ExpandMulti.DefMethod(name, (arg) => macro(arg.exp, arg.args).Expand(arg.args));
 
     private static string StringifyQ(Exp q)
     {
