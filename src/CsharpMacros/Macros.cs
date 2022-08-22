@@ -58,7 +58,14 @@ public static class Macros
         => StringifyMulti.Invoke(exp);
 
     public static Exp Q(object exp)
-        => E(new object[] { "'", exp });
+        => E(new object[] { "'", exp }); 
+
+    private static string StringifyQ(Exp q)
+    {
+        var strCmps = q.Select(cmp => cmp is Exp exp ? $"({StringifyQ(exp)})" : $"{cmp ?? "null"}");
+
+        return $"{string.Join(", ", strCmps)}\n";
+    }
 
     private static Exp ExpandExp(Exp exp, IEnumerable<Exp> args)
     {
@@ -72,14 +79,7 @@ public static class Macros
         return expanded;
     }
 
-    public static string StringifyQ(Exp q)
-    {
-        var strCmps = q.Select(cmp => cmp is Exp exp ? $"({StringifyQ(exp)})" : $"{cmp ?? "null"}");
-
-        return $"{string.Join(", ", strCmps)}\n";
-    }
-
-    public static Exp ExpandQ(Exp q)
+    private static Exp ExpandQ(Exp q)
     {
         if (q.Count() > 2)
             throw new ArgumentException("Quote exp admites only 2 items, the quote literal('), and the quoted exp");
