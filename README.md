@@ -2,6 +2,38 @@
 
 Exploring expressions as data and macros in c#
 
+## Macros
+
+```csharp
+Macro("switch", (exp, _args) => exp
+    .Skip(2)
+    .Partition(size: 2)
+    .Where(pair => pair.Count() == 2)
+    .Select(pair => new {
+        test = pair.First(),
+        result = pair.Last() })
+    .Aggregate(exp.Nth<Exp>(-1), (acc, curr) =>
+        E("if", E("eq", curr.test, exp.Nth<Exp>(1)),
+            curr.result,
+            acc)));
+```
+
+```csharp
+var getVimMovement =
+    E("fn",
+        E("command", typeof(string)),
+        E("switch", E("param", "command"),
+            E("const", "h"), E("const", "move-left"),
+            E("const", "j"), E("const", "move-down"),
+            E("const", "k"), E("const", "move-up"),
+            E("const", "l"), E("const", "move-left"),
+            E("const", "unknown")))
+    .Compile(contract: (string comand) => default(string));
+
+getVimMovement("h"); // => "move-left"
+getVimMovement("k"); // => "move-up"
+``
+
 ## E(...)
 
 All the expression tree is built as a uniform data structure. Components of an expression are of arbitrary types, depend on each specific expression type. The complete expression tree is manimulable data, so you can easely expand expression.
