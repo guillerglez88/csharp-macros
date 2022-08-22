@@ -108,4 +108,37 @@ public class MacroTests
 
         Assert.Equal("even", result);
     }
+
+    [Fact]
+    public void CanCreateSwitchMacro()
+    {
+        Macro("switch", (exp, _args) => exp
+            .Skip(2)
+            .Partition(size: 2)
+            .Where(pair => pair.Count() == 2)
+            .Select(pair => new {
+                test = pair.First(),
+                result = pair.Last() })
+            .Aggregate(exp.Nth<Exp>(-1), (acc, curr) =>
+                E("if", E("eq", curr.test, exp.Nth<Exp>(1)),
+                    curr.result,
+                    acc)));
+
+        var getVimMovement =
+            E("fn",
+                E("command", typeof(string)),
+                E("switch", E("param", "command"),
+                    E("const", "h"), E("const", "move-left"),
+                    E("const", "j"), E("const", "move-down"),
+                    E("const", "k"), E("const", "move-up"),
+                    E("const", "l"), E("const", "move-left"),
+                    E("const", "unknown")))
+            .Compile(contract: (string comand) => default(string));
+
+        var left = getVimMovement("h");
+        var up = getVimMovement("k");
+
+        Assert.Equal("move-left", left);
+        Assert.Equal("move-up", up);
+    }
 }
