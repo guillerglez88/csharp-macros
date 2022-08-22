@@ -32,7 +32,7 @@ var getVimMovement =
 
 getVimMovement("h"); // => "move-left"
 getVimMovement("k"); // => "move-up"
-``
+```
 
 ## E(...)
 
