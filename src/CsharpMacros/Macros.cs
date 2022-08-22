@@ -30,11 +30,12 @@ public static class Macros
             dispatch: (exp) => exp.Nth<string>(0));
 
         ExpandMulti
+            .DefMethod("'", (arg) => ExpandQ(arg.exp))
             .DefDefault((_, arg) => ExpandExp(arg.exp, arg.args));
 
         StringifyMulti
             .DefMethod("'", (exp) => $"'{StringifyQ(E(exp.Skip(1).ToArray()))}");
-    } 
+    }
 
     public static Func<object[], object> Compile(
         this Exp exp)
@@ -76,5 +77,18 @@ public static class Macros
         var strCmps = q.Select(cmp => cmp is Exp exp ? $"({StringifyQ(exp)})" : $"{cmp ?? "null"}");
 
         return $"{string.Join(", ", strCmps)}\n";
+    }
+
+    public static Exp ExpandQ(Exp q)
+    {
+        if (q.Count() > 2)
+            throw new ArgumentException("Quote exp admites only 2 items, the quote literal('), and the quoted exp");
+
+        var exp = q.Nth<Exp>(-1);
+        var cmps = exp
+            .Select(cmp => cmp is Exp exp ? Q(exp).Expand() : cmp)
+            .ToArray();
+
+        return E(new object[] { "list" }.Concat(cmps).ToArray());
     }
 }

@@ -16,21 +16,7 @@ public class List
 	{
 		TranslateMulti
 			.DefMethod("list", TranslateList);
-
-		ExpandMulti
-			.DefMethod("'", (arg) => ExpandQ(arg.exp));
-	}
-
-	public static Exp ExpandQ(Exp q)
-	{
-		if (q.Count() > 2)
-			throw new ArgumentException("Quote exp admites only 2 items, the quote literal('), and the quoted exp");
-
-		var cmp = q.Last();
-		var exp = cmp is Exp e ? Q(e).Expand() : E("const", cmp);
-
-		return E("list", exp);
-	}
+	} 
 
 	public static Expression TranslateList(Exp array)
 	{

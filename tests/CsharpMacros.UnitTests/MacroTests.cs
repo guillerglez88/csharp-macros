@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Newtonsoft.Json;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -11,6 +12,25 @@ namespace CsharpMacros.UnitTests;
 
 public class MacroTests
 {
+    [Fact]
+    public void CanExpandQuotedExp()
+    {
+        var expanded =
+            E("list", "sum", 1, 2, 3,
+                E("list", "sum", 4, 5));
+
+        var exp = 
+            E("'", 
+                E("sum", 1, 2, 3,
+                    E("sum", 4, 5)));
+
+        var expandedExp = exp.Expand();
+
+        Assert.Equal(
+            JsonConvert.SerializeObject(expanded), 
+            JsonConvert.SerializeObject(expandedExp));
+    }
+
     [Fact]
     public void CanCreateMacros()
     {
