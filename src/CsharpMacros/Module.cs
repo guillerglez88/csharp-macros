@@ -15,10 +15,11 @@ public static class Module
     public static void InitializeAllModules()
     {
         Initialize<Arithmetics>();
+        Initialize<Conditionals>();
         Initialize<Values>();
         Initialize<Fn>();
         Initialize<Members>();
+        Initialize<List>();
         Initialize<Dict>();
-        Initialize<Conditionals>();
     }
 }

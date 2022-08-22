@@ -29,7 +29,12 @@ public static class Macros
             contract: (Exp exp) => default(string),
             dispatch: (exp) => exp.Nth<string>(0));
 
-        ExpandMulti.DefDefault((_, arg) => ExpandExp(arg.exp, arg.args));
+        ExpandMulti
+            .DefMethod("'", (arg) => ExpandQ(arg.exp))
+            .DefDefault((_, arg) => ExpandExp(arg.exp, arg.args));
+
+        StringifyMulti
+            .DefMethod("'", (exp) => $"'{StringifyQ(E(exp.Skip(1).ToArray()))}");
     }
 
     public static Func<object[], object> Compile(
@@ -52,6 +57,19 @@ public static class Macros
     public static string Stringify(this Exp exp)
         => StringifyMulti.Invoke(exp);
 
+    public static Exp Q(object exp)
+        => E(new object[] { "'", exp }); 
+
+    public static void Macro(string name, Func<Exp, IEnumerable<Exp>, Exp> macro)
+        => ExpandMulti.DefMethod(name, (arg) => macro(arg.exp, arg.args));
+
+    private static string StringifyQ(Exp q)
+    {
+        var strCmps = q.Select(cmp => cmp is Exp exp ? $"({StringifyQ(exp)})" : $"{cmp ?? "null"}");
+
+        return $"{string.Join(", ", strCmps)}\n";
+    }
+
     private static Exp ExpandExp(Exp exp, IEnumerable<Exp> args)
     {
         var expandedComponents = exp
@@ -62,5 +80,18 @@ public static class Macros
         var expanded = E(new[] { exp.First() }.Concat(expandedComponents).ToArray());
 
         return expanded;
+    }
+
+    private static Exp ExpandQ(Exp q)
+    {
+        if (q.Count() > 2)
+            throw new ArgumentException("Quote exp admites only 2 items, the quote literal('), and the quoted exp");
+
+        var exp = q.Nth<Exp>(-1);
+        var cmps = exp
+            .Select(cmp => cmp is Exp exp ? Q(exp).Expand() : cmp)
+            .ToArray();
+
+        return E(new object[] { "list" }.Concat(cmps).ToArray());
     }
 }
