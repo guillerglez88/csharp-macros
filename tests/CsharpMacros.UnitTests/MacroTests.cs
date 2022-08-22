@@ -57,7 +57,11 @@ public class MacroTests
     {
         var expanded =
             E("if",
-                E("eq", E("mod", 4, 2), 0),
+                E("eq", 
+                    E("mod", 
+                        E("const", 4), 
+                        E("const", 2)), 
+                    E("const", 0)),
                 E("const", "even"),
                 E("const", default(string)));
 
@@ -69,12 +73,39 @@ public class MacroTests
 
         var exp =
             E("when",
-                E("eq", E("mod", 4, 2), 0),
+                E("eq", 
+                    E("mod", 
+                        E("const", 4), 
+                        E("const", 2)), 
+                    E("const", 0)),
                 E("const", "even"))
             .Expand();
 
         Assert.Equal(
             JsonConvert.SerializeObject(expanded),
             JsonConvert.SerializeObject(exp));
+    }
+
+    [Fact]
+    public void CanUseMacros()
+    {
+        Macro("when", (exp, _args) =>
+            E("if",
+                exp.Nth<Exp>(1),
+                E("cast", typeof(object), exp.Nth<Exp>(2)),
+                E("const", default(object))));
+
+        var even =
+            E("when",
+                E("eq", 
+                    E("mod", 
+                        E("const", 4), 
+                        E("const", 2)), 
+                    E("const", 0)),
+                E("const", "even"))
+            .Compile(contract: () => default(string));
+        var result = even();
+
+        Assert.Equal("even", result);
     }
 }
