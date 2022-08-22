@@ -60,6 +60,9 @@ public static class Macros
     public static Exp Q(object exp)
         => E(new object[] { "'", exp }); 
 
+    public static void Macro(string name, Func<Exp, IEnumerable<Exp>, Exp> macro)
+        => ExpandMulti.DefMethod(name, (arg) => macro(arg.exp, arg.args));
+
     private static string StringifyQ(Exp q)
     {
         var strCmps = q.Select(cmp => cmp is Exp exp ? $"({StringifyQ(exp)})" : $"{cmp ?? "null"}");

@@ -1,4 +1,5 @@
-﻿using Newtonsoft.Json;
+﻿using CsharpDataOriented;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -24,15 +25,15 @@ public class MacroTests
             E("list", "sum", 1, 2, 3,
                 E("list", "sum", 4, 5));
 
-        var exp = 
-            E("'", 
+        var exp =
+            E("'",
                 E("sum", 1, 2, 3,
                     E("sum", 4, 5)));
 
         var expandedExp = exp.Expand();
 
         Assert.Equal(
-            JsonConvert.SerializeObject(expanded), 
+            JsonConvert.SerializeObject(expanded),
             JsonConvert.SerializeObject(expandedExp));
     }
 
@@ -52,17 +53,28 @@ public class MacroTests
     }
 
     [Fact]
-    public void CanCreateMacros()
+    public void CanExpandMacros()
     {
-        var whenMacro =
-            E("macro", "when",
-                E("test", typeof(Exp),
-                  "body", typeof(Exp)),
-                E("if",
-                    E("param", "test"),
-                    E("param", "body"),
-                    E("const", default(object))));
+        var expanded =
+            E("if",
+                E("eq", E("mod", 4, 2), 0),
+                E("const", "even"),
+                E("const", default(string)));
 
-        var qWhen = Q(whenMacro);
+        Macro("when", (exp, _args) =>
+            E("if",
+                exp.Nth<Exp>(1),
+                exp.Nth<Exp>(2),
+                E("const", default(object))));
+
+        var exp =
+            E("when",
+                E("eq", E("mod", 4, 2), 0),
+                E("const", "even"))
+            .Expand();
+
+        Assert.Equal(
+            JsonConvert.SerializeObject(expanded),
+            JsonConvert.SerializeObject(exp));
     }
 }
