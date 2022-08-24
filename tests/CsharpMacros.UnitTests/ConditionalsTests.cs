@@ -33,7 +33,7 @@ public class ConditionalsTests
                             E("param", "app-downloads"),
                             E("const", 10000))),
                     E("and",
-                        E("leq",
+                        E("le",
                             E("param", "new-members"),
                             E("const", 100)),
                         E("gt",

@@ -22,9 +22,9 @@ public class Conditionals
             .DefMethod("and", TranslateAnd)
             .DefMethod("or", TranslateOr)
             .DefMethod("gt", TranslateGt)
-            .DefMethod("geq", TranslateGeq)
+            .DefMethod("ge", TranslateGeq)
             .DefMethod("lt", TranslateLt)
-            .DefMethod("leq", TranslateLeq);
+            .DefMethod("le", TranslateLeq);
 
         ExpandMulti
             .DefMethod("neq", (arg) => ExpandNeq(arg.exp, arg.args));
@@ -36,9 +36,9 @@ public class Conditionals
             .DefMethod("and", StringifyAnd)
             .DefMethod("or", StringifyOr)
             .DefMethod("gt", StringifyGt)
-            .DefMethod("geq", StringifyGeq)
+            .DefMethod("ge", StringifyGeq)
             .DefMethod("lt", StringifyLt)
-            .DefMethod("leq", StringifyLeq);
+            .DefMethod("le", StringifyLeq);
     }
 
     public static Expression TranslateIf(Exp ifElse)

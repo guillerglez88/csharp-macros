@@ -115,5 +115,5 @@ getName(person); // => { "Given": [ "Glen", "Ruben" ], "Family": "Rodriguez"}
 | "neq"    | boolean not equal             |     X      | ("neq", E("const", 2), E("const", 3))       |
 | "gt"     | boolean greater than          |            | ("gt", E("const", 5), E("const", 3))        |
 | "lt"     | boolean less than             |            | ("lt", E("const", 5), E("const", 10))       |
-| "geq"    | boolean greater than or equal |     X      | ("geq", E("const", 5), E("const", 5))       |
-| "leq"    | boolean less than or equal    |     X      | ("leq", E("const", 5), E("const", 5))       |
+| "ge"     | boolean greater than or equal |     X      | ("ge", E("const", 5), E("const", 5))        |
+| "le"     | boolean less than or equal    |     X      | ("le", E("const", 5), E("const", 5))        |
