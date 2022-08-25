@@ -2,9 +2,8 @@
 using System.Reflection;
 
 using static CsharpMultimethod.Multi;
-using static CsharpDataOriented.CollectionsModule;
+using static CsharpDataOriented.Collections;
 using static CsharpMacros.Exp;
-using static CsharpMacros.Members;
 using CsharpMultimethod;
 
 namespace CsharpMacros;
